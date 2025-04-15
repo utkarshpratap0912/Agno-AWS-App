@@ -1,4 +1,3 @@
-import os
 from os import getenv
 from typing import Optional
 
@@ -12,13 +11,13 @@ class DbSettings(BaseSettings):
     """
 
     # Database configuration
-    postgresql_path: str = os.getenv("POSTGRESQL_PATH", "C:/Users/UTKARSH/PostgreSQL_16/16")
-    db_host: str = "localhost"  # Changed from Optional[str]
-    db_port: int = 5433        # Changed from Optional[int]
-    db_user: str = "postgres"   # Changed from Optional[str]
-    db_pass: str = "123456"  # Changed from Optional[str]
-    db_database: str = "mydb"   # Changed from Optional[str]
+    db_host: Optional[str] = None
+    db_port: Optional[int] = None
+    db_user: Optional[str] = None
+    db_pass: Optional[str] = None
+    db_database: Optional[str] = None
     db_driver: str = "postgresql+psycopg"
+    # Create/Upgrade database on startup using alembic
     migrate_db: bool = False
 
     def get_db_url(self) -> str:
