@@ -11,6 +11,7 @@ from db.session import db_url
 
 def get_scholar(
     model_id: str = "gpt-4o",
+    tenant_id: Optional[str] = None,
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
     debug_mode: bool = True,
@@ -21,6 +22,11 @@ def get_scholar(
         additional_context += f"You are interacting with the user: {user_id}"
         additional_context += "</context>"
 
+        import os
+    if tenant_id:
+        rag_path = os.path.join("rag_data", tenant_id)
+        os.makedirs(rag_path, exist_ok=True)
+
     return Agent(
         name="Scholar",
         agent_id="scholar",
@@ -30,7 +36,7 @@ def get_scholar(
         # Tools available to the agent
         tools=[DuckDuckGoTools()],
         # Storage for the agent
-        storage=PostgresAgentStorage(table_name="scholar_sessions", db_url=db_url),
+        storage=PostgresAgentStorage(table_name=f"{tenant_id}_scholar_sessions" if tenant_id else "scholar_sessions", db_url=db_url),
         # Description of the agent
         description=dedent("""\
             You are Scholar, a cutting-edge Answer Engine built to deliver precise, context-rich, and engaging responses.

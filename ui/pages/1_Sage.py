@@ -1,5 +1,4 @@
 import asyncio
-
 import nest_asyncio
 import streamlit as st
 from agno.agent import Agent
@@ -41,9 +40,15 @@ async def header():
 
 async def body() -> None:
     ####################################################################
-    # Initialize User and Session State
+    # ✅ Get user_id and tenant_id from auth session
     ####################################################################
-    user_id = st.sidebar.text_input(":technologist: Username", value="Ava")
+    if "phantom_token" not in st.session_state:
+        st.error("🔐 Please log in first.")
+        st.stop()
+
+    tenant_id, user_id = st.session_state["phantom_token"].split(":")
+    st.sidebar.write(f"👤 User: {user_id}")
+    st.sidebar.write(f"🏢 Tenant: {tenant_id}")
 
     ####################################################################
     # Model selector
@@ -60,8 +65,12 @@ async def body() -> None:
         or st.session_state.get("selected_model") != model_id
     ):
         logger.info("---*--- Creating Sage Agent ---*---")
-        sage = get_sage(user_id=user_id, model_id=model_id)
-        st.session_state[agent_name]["agent"] = sage
+        sage = get_sage(user_id=user_id, tenant_id=tenant_id, model_id=model_id)
+        st.session_state[agent_name] = {
+            "agent": sage,
+            "session_id": None,
+            "messages": [],
+        }
         st.session_state["selected_model"] = model_id
     else:
         sage = st.session_state[agent_name]["agent"]
@@ -76,16 +85,13 @@ async def body() -> None:
         return
 
     ####################################################################
-    # Load agent runs (i.e. chat history) from memory is messages is empty
+    # Load agent runs (i.e. chat history)
     ####################################################################
     if sage.memory:
         agent_runs = sage.memory.runs
         if len(agent_runs) > 0:
-            # If there are runs, load the messages
             logger.debug("Loading run history")
-            # Clear existing messages
             st.session_state[agent_name]["messages"] = []
-            # Loop through the runs and add the messages to the messages list
             for agent_run in agent_runs:
                 if agent_run.message is not None:
                     await add_message(agent_name, agent_run.message.role, str(agent_run.message.content))
@@ -113,7 +119,6 @@ async def body() -> None:
             _content = message["content"]
             if _content is not None:
                 with st.chat_message(message["role"]):
-                    # Display tool calls if they exist in the message
                     if "tool_calls" in message and message["tool_calls"]:
                         display_tool_calls(st.empty(), message["tool_calls"])
                     st.markdown(_content)
@@ -126,25 +131,18 @@ async def body() -> None:
         user_message = last_message["content"]
         logger.info(f"Responding to message: {user_message}")
         with st.chat_message("assistant"):
-            # Create container for tool calls
             tool_calls_container = st.empty()
             resp_container = st.empty()
             with st.spinner(":thinking_face: Thinking..."):
                 response = ""
                 try:
-                    # Run the agent and stream the response
                     run_response = await sage.arun(user_message, stream=True)
                     async for resp_chunk in run_response:
-                        # Display tool calls if available
                         if resp_chunk.tools and len(resp_chunk.tools) > 0:
                             display_tool_calls(tool_calls_container, resp_chunk.tools)
-
-                        # Display response
                         if resp_chunk.content is not None:
                             response += resp_chunk.content
                             resp_container.markdown(response)
-
-                    # Add the response to the messages
                     if sage.run_response is not None:
                         await add_message(agent_name, "assistant", response, sage.run_response.tools)
                     else:

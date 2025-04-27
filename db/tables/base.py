@@ -10,4 +10,4 @@ class Base(DeclarativeBase):
     https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.DeclarativeBase
     """
 
-    metadata = MetaData(schema="public")
+    metadata = MetaData(schema="ai")

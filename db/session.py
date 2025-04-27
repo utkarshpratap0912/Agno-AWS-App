@@ -5,12 +5,16 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from db.settings import db_settings
 
+
+
 # Create SQLAlchemy Engine using a database URL
 db_url: str = db_settings.get_db_url()
 db_engine: Engine = create_engine(db_url, pool_pre_ping=True)
 
 # Create a SessionLocal class
 SessionLocal: sessionmaker[Session] = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+print(f"🚨 Using DB URL: {db_url}")
 
 
 def get_db() -> Generator[Session, None, None]:
