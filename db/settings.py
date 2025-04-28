@@ -26,7 +26,7 @@ class DbSettings(BaseSettings):
     db_port: int = 5432
     db_user: str = "postgres"      
     db_pass: str = "q0PgMNmwYsOfzx9moXFl"      # the password you set
-    db_database: str = "mydb"               
+    db_database: str = "postgres"               
     db_driver: str = "postgresql+psycopg"
     migrate_db: bool = False
 

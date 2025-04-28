@@ -22,7 +22,7 @@ ENABLE_AUTH = True  # Toggle to False to bypass auth
 
 #aws
 
-DB_URL = "postgresql://postgres:q0PgMNmwYsOfzx9moXFl@mydb.c89466wkiwuk.us-east-1.rds.amazonaws.com:5432/mydb"
+DB_URL = "postgresql://postgres:q0PgMNmwYsOfzx9moXFl@mydb.c89466wkiwuk.us-east-1.rds.amazonaws.com:5432/postgres"
 USERS_TABLE = "users"
 
 def get_connection():
