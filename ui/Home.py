@@ -20,7 +20,9 @@ nest_asyncio.apply()
 
 ENABLE_AUTH = True  # Toggle to False to bypass auth
 
-DB_URL = "postgresql://postgres:123456@localhost:5433/mydb"
+#aws
+
+DB_URL = "postgresql://postgres:q0PgMNmwYsOfzx9moXFl@mydb.c89466wkiwuk.us-east-1.rds.amazonaws.com:5432/mydb"
 USERS_TABLE = "users"
 
 def get_connection():

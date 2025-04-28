@@ -12,12 +12,21 @@ class DbSettings(BaseSettings):
     """
 
     # Database configuration
-    postgresql_path: str = os.getenv("POSTGRESQL_PATH", "C:/Users/UTKARSH/PostgreSQL_16/16")
-    db_host: str = "localhost"  # Changed from Optional[str]
-    db_port: int = 5433        # Changed from Optional[int]
-    db_user: str = "postgres"   # Changed from Optional[str]
-    db_pass: str = "123456"  # Changed from Optional[str]
-    db_database: str = "mydb"   # Changed from Optional[str]
+    # postgresql_path: str = os.getenv("POSTGRESQL_PATH", "C:/Users/UTKARSH/PostgreSQL_16/16")
+    # db_host: str = "localhost"  # Changed from Optional[str]
+    # db_port: int = 5433        # Changed from Optional[int]
+    # db_user: str = "postgres"   # Changed from Optional[str]
+    # db_pass: str = "123456"  # Changed from Optional[str]
+    # db_database: str = "mydb"   # Changed from Optional[str]
+    # db_driver: str = "postgresql+psycopg"
+    # migrate_db: bool = False
+    
+    # for aws rds
+    db_host: str = "mydb.c89466wkiwuk.us-east-1.rds.amazonaws.com"
+    db_port: int = 5432
+    db_user: str = "postgres"      
+    db_pass: str = "q0PgMNmwYsOfzx9moXFl"      # the password you set
+    db_database: str = "mydb"               
     db_driver: str = "postgresql+psycopg"
     migrate_db: bool = False
 
