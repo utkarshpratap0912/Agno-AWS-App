@@ -33,10 +33,27 @@ def ensure_users_table():
     conn.commit()
     conn.close()
 
+# def get_user(username):
+#     conn = get_connection()
+#     cur = conn.cursor()
+#     cur.execute(f"SELECT tenant_id FROM {USERS_TABLE} WHERE user_name = %s", (username,))
+#     row = cur.fetchone()
+#     conn.close()
+#     return row[0] if row else None
+
+# def create_user(username):
+#     tenant_id = str(uuid.uuid4())
+#     conn = get_connection()
+#     cur = conn.cursor()
+#     cur.execute(f"INSERT INTO {USERS_TABLE} (user_name, tenant_id) VALUES (%s, %s)", (username, tenant_id))
+#     conn.commit()
+#     conn.close()
+#     return tenant_id
+
 def get_user(username):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute(f"SELECT tenant_id FROM {USERS_TABLE} WHERE user_name = %s", (username,))
+    cur.execute(f"SELECT tenant_id FROM {USERS_TABLE} WHERE LOWER(user_name) = %s", (username.lower(),))
     row = cur.fetchone()
     conn.close()
     return row[0] if row else None
@@ -45,7 +62,7 @@ def create_user(username):
     tenant_id = str(uuid.uuid4())
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute(f"INSERT INTO {USERS_TABLE} (user_name, tenant_id) VALUES (%s, %s)", (username, tenant_id))
+    cur.execute(f"INSERT INTO {USERS_TABLE} (user_name, tenant_id) VALUES (%s, %s)", (username.lower(), tenant_id))
     conn.commit()
     conn.close()
     return tenant_id
