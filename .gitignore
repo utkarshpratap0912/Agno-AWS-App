@@ -23,6 +23,7 @@
 # ignore storage dir
 /storage
 .images
+/rag_data
 
 # ignore dist dir
 dist
