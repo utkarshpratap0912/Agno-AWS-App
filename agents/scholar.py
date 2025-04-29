@@ -1,5 +1,7 @@
 from textwrap import dedent
 from typing import Optional
+from sqlalchemy import create_engine, text
+import re
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
@@ -13,6 +15,7 @@ def get_scholar(
     model_id: str = "gpt-4o",
     tenant_id: Optional[str] = None,
     user_id: Optional[str] = None,
+    username: Optional[str] = None,
     session_id: Optional[str] = None,
     debug_mode: bool = True,
 ) -> Agent:
@@ -24,8 +27,18 @@ def get_scholar(
 
         import os
     if tenant_id:
-        rag_path = os.path.join("rag_data", tenant_id)
-        os.makedirs(rag_path, exist_ok=True)
+        # rag_path = os.path.join("rag_data", tenant_id)
+        # os.makedirs(rag_path, exist_ok=True)
+        
+        if not username:
+            raise ValueError("Username is required for schema assignment.")
+        schema = re.sub(r'\W+', '_', username.lower())
+
+        # ✅ Create schema if not exists
+        engine = create_engine(db_url)
+        with engine.connect() as conn:
+            conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
+            
 
     return Agent(
         name="Scholar",
@@ -36,7 +49,7 @@ def get_scholar(
         # Tools available to the agent
         tools=[DuckDuckGoTools()],
         # Storage for the agent
-        storage=PostgresAgentStorage(table_name=f"{tenant_id}_scholar_sessions" if tenant_id else "scholar_sessions", db_url=db_url),
+        storage=PostgresAgentStorage(table_name=f"{tenant_id[:8]}_scholar_sessions" if tenant_id else "scholar_sessions", schema=schema, db_url=db_url),
         # Description of the agent
         description=dedent("""\
             You are Scholar, a cutting-edge Answer Engine built to deliver precise, context-rich, and engaging responses.
