@@ -1,5 +1,3 @@
-
-
 # NEW (MULTITENANCY)
 from sqlalchemy import create_engine, text
 import re
@@ -40,6 +38,18 @@ def get_sage(
         engine = create_engine(db_url)
         with engine.connect() as conn:
             conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
+            
+            # ✅ Create knowledge table if not exists
+            # create_table_query = f"""
+            # CREATE TABLE IF NOT EXISTS "{schema}"."{table_name}" (
+            #     id TEXT PRIMARY KEY,
+            #     name TEXT,
+            #     meta_data JSONB,
+            #     filters JSONB,
+            #     content TEXT
+            # );
+            # """
+            # conn.execute(text(create_table_query))
 
 
         return Agent(
@@ -54,7 +64,7 @@ def get_sage(
             storage=PostgresAgentStorage(table_name=f"{tenant_id[:8]}_sage_sessions" if tenant_id else "sage_sessions", schema=schema, db_url=db_url),
             # Knowledge base for the agent
             knowledge=AgentKnowledge(
-                vector_db=PgVector(table_name=table_name, schema=user_id if user_id else "ai", schema=schema, db_url=db_url, search_type=SearchType.hybrid)
+                vector_db=PgVector(table_name=table_name, schema=schema, db_url=db_url, search_type=SearchType.hybrid)
             ),
             # Description of the agent
             description=dedent("""\

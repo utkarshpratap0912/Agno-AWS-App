@@ -45,8 +45,8 @@ async def body() -> None:
         st.error("🔐 Please log in first.")
         st.stop()
 
-    tenant_id, user_id = st.session_state["phantom_token"].split(":")
-    st.sidebar.write(f"👤 User: {user_id}")
+    tenant_id, username = st.session_state["phantom_token"].split(":")
+    st.sidebar.write(f"👤 User: {username}")
     st.sidebar.write(f"🏢 Tenant: {tenant_id}")
 
     ####################################################################
@@ -64,7 +64,7 @@ async def body() -> None:
         or st.session_state.get("selected_model") != model_id
     ):
         logger.info("---*--- Creating Scholar agent ---*---")
-        scholar = get_scholar(user_id=user_id, tenant_id=tenant_id, model_id=model_id)
+        scholar = get_scholar(user_id=username, tenant_id=tenant_id, username=username, model_id=model_id)
         st.session_state[agent_name] = {
             "agent": scholar,
             "session_id": None,
@@ -154,7 +154,7 @@ async def body() -> None:
     ####################################################################
     # Session selector
     ####################################################################
-    await session_selector(agent_name, scholar, get_scholar, user_id, model_id)
+    await session_selector(agent_name, scholar, get_scholar, username, model_id)
 
     ####################################################################
     # About section
